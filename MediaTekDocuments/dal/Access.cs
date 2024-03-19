@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using MediaTekDocuments.model;
 using MediaTekDocuments.manager;
@@ -46,8 +46,8 @@ namespace MediaTekDocuments.dal
             String authenticationString;
             try
             {
-                authenticationString = "root:";
-                //authenticationString = "admin:adminpwd";
+                authenticationString = "admin:adminpwd";
+ 
                 api = ApiRest.GetInstance(uriApi, authenticationString);
             }
             catch (Exception e)
@@ -109,7 +109,36 @@ namespace MediaTekDocuments.dal
             List<Livre> lesLivres = TraitementRecup<Livre>(GET, "livre");
             return lesLivres;
         }
+        /// <summary>
+        /// Retourne les commandes d'un livre
+        /// </summary>
+        /// <param name="idLivre"></param>
+        /// <returns></returns>
+        /// 
 
+
+        /// <summary>
+        /// Retourne tous les etats à partir de la BDD
+        /// </summary>
+        /// <returns></returns>
+        public List<Etat> GetAllEtats()
+        {
+            IEnumerable<Etat> lesEtats = TraitementRecup<Etat>(GET, "etat");
+            return new List<Etat>(lesEtats);
+        }
+
+        /// <summary>
+        /// Retourne les commandes d'un livre
+        /// </summary>
+        /// <param name="idLivre"></param>
+        /// <returns></returns>
+        public List<CommandeDocument> GetCommandesLivres(string idLivre)
+        {
+            String jsonIdDocument = convertToJson("idLivreDvd", idLivre);
+            List<CommandeDocument> lesCommandesLivres = TraitementRecup<CommandeDocument>(GET, "commandedocument/" + jsonIdDocument);
+            return lesCommandesLivres;
+        }
+   
         /// <summary>
         /// Retourne toutes les dvd à partir de la BDD
         /// </summary>
@@ -240,6 +269,12 @@ namespace MediaTekDocuments.dal
             {
                 serializer.Serialize(writer, value);
             }
+        }
+
+        public List<Suivi> GetAllSuivis()
+        {
+            IEnumerable<Suivi> LesSuivis = TraitementRecup<Suivi>(GET, "suivi");
+            return new List<Suivi>(LesSuivis);
         }
 
     }

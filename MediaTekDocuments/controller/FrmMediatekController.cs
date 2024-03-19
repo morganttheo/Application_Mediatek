@@ -96,5 +96,24 @@ namespace MediaTekDocuments.controller
         {
             return access.CreerExemplaire(exemplaire);
         }
+
+            
+        /// <summary>
+        /// Récupère les commandes d'une livre
+        /// </summary>
+        /// <param name="idLivre">id du livre concernée</param>
+        /// <returns></returns>
+        public List<CommandeDocument> GetCommandesLivres(string idLivre)
+        {
+            return access.GetCommandesLivres(idLivre);
+        }
+        /// <summary>
+        /// getter sur les etats
+        /// </summary>
+        /// <returns></returns>
+        public List<Suivi> GetAllSuivis()
+        {
+            return access.GetAllSuivis();
+        }
     }
 }
