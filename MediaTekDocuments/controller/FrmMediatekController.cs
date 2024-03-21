@@ -97,7 +97,7 @@ namespace MediaTekDocuments.controller
             return access.CreerExemplaire(exemplaire);
         }
 
-            
+
         /// <summary>
         /// Récupère les commandes d'une livre
         /// </summary>

@@ -55,10 +55,6 @@ namespace MediaTekDocuments.view
         private readonly BindingSource bdgLivresListe = new BindingSource();
         private List<Livre> lesLivres = new List<Livre>();
 
-        #region Onglet Commande de livres
-        private readonly BindingSource bdgCommandesLivresListe = new BindingSource();
-        private List<CommandeDocument> lesCommandes = new List<CommandeDocument>();
-        #endregion
         /// <summary>
         /// Ouverture de l'onglet Livres : 
         /// appel des méthodes pour remplir le datagrid des livres et des combos (genre, rayon, public)
@@ -1348,7 +1344,7 @@ namespace MediaTekDocuments.view
             RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxLivresRayons2);
             RemplirComboSuivi(controller.GetAllSuivis(), bdgLivresComEtat, cbxLivresCommandeEtat);
             RemplirLivresListeComplete();
-           // lesCommandes = controller.GetCommandesLivres();
+            //lesCommandes = controller.GetCommandesLivres();
             //RemplirCommandesListeComplete();
         }
         /// <summary>
@@ -1438,21 +1434,10 @@ namespace MediaTekDocuments.view
                 VideLivresInfos();
             }
         }
-
-        /// <summary>
-        /// Récupère et affiche les commandes d'un livre
-        /// </summary>
-        /// <param name="livre"></param>
-        private void AfficheLivresCommandeInfos(Livre livre)
-        {
-            string idLivre = livre.Id;
-            lesCommandes = controller.GetCommandesLivres(idLivre);
-            groupBox1.Text = livre.Titre;
-     
-           // if (lesCommandes.Count == 0)
-                //VideLivresComInfos();
-            RemplirLivresCommandesListe(lesCommandes);
-        }
+        #region Onglet Commande de livres
+        private readonly BindingSource bdgCommandesLivresListe = new BindingSource();
+        private List<CommandeDocument> lesCommandes = new List<CommandeDocument>();
+        #endregion
         /// <summary>
         /// Remplit le dategrid avec la liste reçue en paramètre
         /// </summary>
@@ -1468,7 +1453,6 @@ namespace MediaTekDocuments.view
                 dgvCommandesListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
                 dgvCommandesListe.Columns["id"].DisplayIndex = 0;
                 dgvCommandesListe.Columns["dateCommande"].DisplayIndex = 1;
-
                 dgvCommandesListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             }
             else
@@ -1476,6 +1460,24 @@ namespace MediaTekDocuments.view
                 dgvCommandesListe.Columns.Clear();
             }
         }
+
+        /// <summary>
+        /// Récupère et affiche les commandes d'un livre
+        /// </summary>
+        /// <param name="livre"></param>
+        private void AfficheLivresCommandeInfos(Livre livre)
+        {
+            string idLivre = livre.Id;
+            lesCommandes = controller.GetCommandesLivres(idLivre);
+            groupBox1.Text = livre.Titre;
+
+            if (lesCommandes.Count == 0)
+                VideLivresComInfos();
+            RemplirLivresCommandesListe(lesCommandes);
+        }
+
+
+
         public void RemplirComboSuivi(List<Suivi> lesSuivis, BindingSource bdg, ComboBox cbx)
         {
             bdg.DataSource = lesSuivis;

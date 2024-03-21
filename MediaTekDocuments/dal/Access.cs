@@ -135,10 +135,11 @@ namespace MediaTekDocuments.dal
         public List<CommandeDocument> GetCommandesLivres(string idLivre)
         {
             String jsonIdDocument = convertToJson("idLivreDvd", idLivre);
+            Console.WriteLine("commandedocument/" + jsonIdDocument);
             List<CommandeDocument> lesCommandesLivres = TraitementRecup<CommandeDocument>(GET, "commandedocument/" + jsonIdDocument);
             return lesCommandesLivres;
         }
-   
+
         /// <summary>
         /// Retourne toutes les dvd à partir de la BDD
         /// </summary>
