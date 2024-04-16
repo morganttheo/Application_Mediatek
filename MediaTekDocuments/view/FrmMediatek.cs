@@ -21,6 +21,7 @@ namespace MediaTekDocuments.view
         private readonly BindingSource bdgPublics = new BindingSource();
         private readonly BindingSource bdgRayons = new BindingSource();
         private readonly BindingSource bdgLivresComEtat = new BindingSource();
+        private bool ajouterBool = false;
         private readonly BindingSource bdgEtats = new BindingSource();
         private List<Etat> lesEtats = new List<Etat>();
 
@@ -320,15 +321,6 @@ namespace MediaTekDocuments.view
             VideLivresZones();
         }
 
-        /// <summary>
-        /// Affichage de la liste complète des livres
-        /// et annulation de toutes les recherches et filtres
-        /// </summary>
-        private void RemplirLivresListeComplete2()
-        {
-            RemplirLivresListe2(lesLivres);
-            VideLivresZones2();
-        }
 
         /// <summary>
         /// vide les zones de recherche et de filtre
@@ -341,17 +333,8 @@ namespace MediaTekDocuments.view
             txbLivresNumRecherche.Text = "";
             txbLivresTitreRecherche.Text = "";
         }
-        /// <summary>
-        /// vide les zones de recherche et de filtre
-        /// </summary>
-        private void VideLivresZones2()
-        {
-            cbxLivresGenres2.SelectedIndex = -1;
-            cbxLivresRayons2.SelectedIndex = -1;
-            cbxLivresPublics2.SelectedIndex = -1;
-            txbLivresNumRecherche2.Text = "";
-            txbLivresTitreRecherche2.Text = "";
-        }
+   
+
 
         /// <summary>
         /// Tri sur les colonnes
@@ -390,6 +373,18 @@ namespace MediaTekDocuments.view
             RemplirLivresListe(sortedList);
         }
         #endregion
+
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// code ajouté par moi-même
         /// </summary>
@@ -708,6 +703,17 @@ namespace MediaTekDocuments.view
         }
         #endregion
 
+
+
+
+
+
+
+
+
+
+
+
         #region Onglet Revues
         private readonly BindingSource bdgRevuesListe = new BindingSource();
         private List<Revue> lesRevues = new List<Revue>();
@@ -1020,7 +1026,14 @@ namespace MediaTekDocuments.view
         }
         #endregion
 
-        #region Onglet Paarutions
+
+
+
+
+
+
+
+        #region Onglet Parutions
         private readonly BindingSource bdgExemplairesListe = new BindingSource();
         private List<Exemplaire> lesExemplaires = new List<Exemplaire>();
         const string ETATNEUF = "00001";
@@ -1274,61 +1287,15 @@ namespace MediaTekDocuments.view
 
 
 
-        private void cbxLivresGenres2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbxLivresGenres2.SelectedIndex >= 0)
-            {
-                txbLivresTitreRecherche2.Text = "";
-                txbLivresNumRecherche2.Text = "";
-                Genre genre = (Genre)cbxLivresGenres2.SelectedItem;
-                List<Livre> livres = lesLivres.FindAll(x => x.Genre.Equals(genre.Libelle));
-                RemplirLivresListe2(livres);
-                cbxLivresRayons2.SelectedIndex = -1;
-                cbxLivresPublics2.SelectedIndex = -1;
-            }
-        }
-        private void RemplirLivresListe2(List<Livre> livres)
-        {
-            bdgLivresListe.DataSource = livres;
-            dgvLivresListe2.DataSource = bdgLivresListe;
-            dgvLivresListe2.Columns["isbn"].Visible = false;
-            dgvLivresListe2.Columns["idRayon"].Visible = false;
-            dgvLivresListe2.Columns["idGenre"].Visible = false;
-            dgvLivresListe2.Columns["idPublic"].Visible = false;
-            dgvLivresListe2.Columns["image"].Visible = false;
-            dgvLivresListe2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            dgvLivresListe2.Columns["id"].DisplayIndex = 0;
-            dgvLivresListe2.Columns["titre"].DisplayIndex = 1;
-        }
 
 
 
-        private void btnLivresNumRecherche2_Click(object sender, EventArgs e)
-        {
-            if (!txbLivresNumRecherche2.Text.Equals(""))
-            {
-                txbLivresTitreRecherche2.Text = "";
-                cbxLivresGenres2.SelectedIndex = -1;
-                cbxLivresRayons2.SelectedIndex = -1;
-                cbxLivresPublics2.SelectedIndex = -1;
-                Livre livre = lesLivres.Find(x => x.Id.Equals(txbLivresNumRecherche2.Text));
-                if (livre != null)
-                {
-                    List<Livre> livres = new List<Livre>() { livre };
-                    RemplirLivresListe2(livres);
-                }
-                else
-                {
-                    MessageBox.Show("numéro introuvable");
-                    RemplirLivresListeComplete2();
-                }
-            }
-            else
-            {
-                RemplirLivresListeComplete2();
-            }
 
-        }
+        #region Onglet Commande de livres
+        private readonly BindingSource bdgCommandesLivresListe = new BindingSource();
+        private List<Livre> lesLivresCom = new List<Livre>();
+        private List<CommandeDocument> LesCommandes = new List<CommandeDocument>();
+
 
         /// <summary>
         /// Ouverture de l'onglet Livres : 
@@ -1338,49 +1305,329 @@ namespace MediaTekDocuments.view
         /// <param name="e"></param>
         private void tabCommandeLivre_Enter(object sender, EventArgs e)
         {
-            lesLivres = controller.GetAllLivres();
-            RemplirComboCategorie(controller.GetAllGenres(), bdgGenres, cbxLivresGenres2);
-            RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxLivresPublics2);
-            RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxLivresRayons2);
-            RemplirComboSuivi(controller.GetAllSuivis(), bdgLivresComEtat, cbxLivresCommandeEtat);
-            RemplirLivresListeComplete();
+            lesLivresCom = controller.GetAllLivres();
+            RemplirComboSuivi(controller.GetAllSuivis(), bdgLivresComEtat, cbxLivresEtatCom);
+            RemplirLivresListeCompleteCom();
             //lesCommandes = controller.GetCommandesLivres();
             //RemplirCommandesListeComplete();
         }
-        /// <summary>
-        /// Recherche et affichage des livres dont le titre matche acec la saisie.
-        /// Cette procédure est exécutée à chaque ajout ou suppression de caractère
-        /// dans le textBox de saisie.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TxbLivresTitreRecherche2_TextChanged(object sender, EventArgs e)
+        private void RemplirLivresListeCom(List<Livre> livres)
         {
-            if (!txbLivresTitreRecherche2.Text.Equals(""))
+            bdgLivresListe.DataSource = livres;
+            dgvLivresListeCom.DataSource = bdgLivresListe;
+            dgvLivresListeCom.Columns["isbn"].Visible = false;
+            dgvLivresListeCom.Columns["idRayon"].Visible = false;
+            dgvLivresListeCom.Columns["idGenre"].Visible = false;
+            dgvLivresListeCom.Columns["idPublic"].Visible = false;
+            dgvLivresListeCom.Columns["image"].Visible = false;
+            dgvLivresListeCom.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dgvLivresListeCom.Columns["id"].DisplayIndex = 0;
+            dgvLivresListeCom.Columns["titre"].DisplayIndex = 1;
+        }
+
+        /// <summary>
+        /// Affichage de la liste complète des livres
+        /// </summary>
+        private void RemplirLivresListeCompleteCom()
+        {
+            RemplirLivresListeCom(lesLivres);
+            VideLivresZonesCom();
+        }
+        /// <summary>
+        /// Remplit le dategrid avec la liste reçue en paramètre
+        /// </summary>
+        /// <param name="livres">liste de livres</param>
+        private void RemplirLivresCommandesListe(List<CommandeDocument> LesCommandes)
+        {
+            if (LesCommandes.Count > 0)
             {
-                cbxLivresGenres2.SelectedIndex = -1;
-                cbxLivresRayons2.SelectedIndex = -1;
-                cbxLivresPublics2.SelectedIndex = -1;
-                txbLivresNumRecherche2.Text = "";
-                List<Livre> lesLivresParTitre;
-                lesLivresParTitre = lesLivres.FindAll(x => x.Titre.ToLower().Contains(txbLivresTitreRecherche2.Text.ToLower()));
-                RemplirLivresListe2(lesLivresParTitre);
+                bdgCommandesLivresListe.DataSource = LesCommandes;
+                dgvCommandesListe.DataSource = bdgCommandesLivresListe;
+                dgvCommandesListe.Columns["idLivreDvd"].Visible = false;
+                dgvCommandesListe.Columns["idSuivi"].Visible = false;
+                dgvCommandesListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                dgvCommandesListe.Columns["id"].DisplayIndex = 0;
+                dgvCommandesListe.Columns["dateCommande"].DisplayIndex = 1;
+                dgvCommandesListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             }
             else
             {
-                // si la zone de saisie est vide et aucun élément combo sélectionné, réaffichage de la liste complète
-                if (cbxLivresGenres2.SelectedIndex < 0 && cbxLivresPublics2.SelectedIndex < 0 && cbxLivresRayons2.SelectedIndex < 0
-                    && txbLivresNumRecherche2.Text.Equals(""))
-                {
-                    RemplirLivresListeComplete2();
-                }
+                dgvCommandesListe.Columns.Clear();
             }
         }
 
-        private void dgvLivresListe2_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        /// <summary>
+        /// Récupère et affiche les commandes d'un livre
+        /// </summary>
+        /// <param name="livre"></param>
+        private void AfficheLivresCommandeInfos(Livre livre)
+        {
+            string idLivre = livre.Id;
+            LesCommandes = controller.GetCommandesLivres(idLivre);
+            groupBox1.Text = livre.Titre;
+
+            if (LesCommandes.Count == 0)
+                VideLivresComInfos();
+            RemplirLivresCommandesListe(LesCommandes);
+        }
+
+        /// <summary>
+        /// vide les zones de recherche et de filtre
+        /// </summary>
+        private void VideLivresZonesCom()
+        {
+
+            txbLivresNumRechercheCom.Text = "";
+        }
+
+        public void RemplirComboSuivi(List<Suivi> lesSuivis, BindingSource bdg, ComboBox cbx)
+        {
+            bdg.DataSource = lesSuivis;
+            cbx.DataSource = bdg;
+            if (cbx.Items.Count > 0)
+            {
+                cbx.SelectedIndex = -1;
+            }
+        }
+        private void AfficheLivresComInfo(CommandeDocument laCommande)
+        {
+            txbLivresNbCom.Text = laCommande.Id;
+            txbLivresNumLivreCom.Text = laCommande.IdLivreDvd;
+            dtpLivresDateCommande.Value = laCommande.DateCommande;
+            txbLivresMontantCom.Text = laCommande.Montant.ToString();
+            txbLivresNbExemplairesCom.Text = laCommande.NbExemplaire.ToString();
+            cbxLivresEtatCom.SelectedIndex = cbxLivresEtatCom.FindString(laCommande.Etat);
+        }
+
+        private void VideLivresComInfos()
+        {
+            txbLivresNbCom.Text = "";
+            dtpLivresDateCommande.Value = DateTime.Now.Date;
+            txbLivresMontantCom.Text = "";
+            txbLivresNbExemplairesCom.Text = "";
+            cbxLivresEtatCom.SelectedIndex = -1;
+        }
+
+        private void dgvCommandesListe_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvCommandesListe.CurrentCell != null)
+            {
+                try
+                {
+                    CommandeDocument commandeDocument = (CommandeDocument)bdgCommandesLivresListe[bdgCommandesLivresListe.Position];
+                    AfficheLivresComInfo(commandeDocument);
+                    Console.WriteLine(commandeDocument.Etat);
+                }
+                catch
+                {
+                    VideLivresComInfos();
+                }
+            }
+            else
+            {
+                VideLivresComInfos();
+            }
+        }
+        /// <summary>
+        /// Augemente un index numerique de type string
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private string PlusUnIdString(string id)
+        {
+            int taille = id.Length;
+            int idnum = int.Parse(id) + 1;
+            id = idnum.ToString();
+            if (id.Length > taille)
+                MessageBox.Show("Taille du registre arrivé a saturation");
+            while (id.Length != taille)
+            {
+                id = "0" + id;
+            }
+            return id;
+        }
+
+
+        private void btnAjoutCommande_Click(object sender, EventArgs e)
+        {
+            //txbLivresNumLivre.ReadOnly = true;
+            ajouterBool = true;
+            string id = PlusUnIdString(controller.GetNbCommandeMax());
+            if (id == "1")
+                id = "00001";
+            VideLivresComInfos();
+            cbxLivresEtatCom.SelectedIndex = 0;
+            txbLivresNbCom.Text = id;
+            cbxLivresEtatCom.Enabled = false;
+        }
+
+
+        private void btnValiderCommande_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                string id = txbLivresNbCom.Text;
+                DateTime dateCommande = dtpLivresDateCommande.Value;
+                float montant = float.Parse(txbLivresMontantCom.Text);
+                int nbExemplaire = int.Parse(txbLivresNbExemplairesCom.Text);
+
+                string idLivreDvd = txbLivresNumLivreCom.Text;
+                int idSuivi = 0;
+                string etat = "";
+                Suivi suivi = (Suivi)cbxLivresEtatCom.SelectedItem;     
+                VerifValueLivreCom();
+
+                if (suivi != null)
+                {
+                    idSuivi = suivi.Id;
+                    etat = suivi.Etat;
+                }
+            
+                if (montant != -1 && nbExemplaire != -1 && etat != "")
+                {
+                    CommandeDocument commandeLivre = new CommandeDocument(id, dateCommande, montant, nbExemplaire, idLivreDvd, idSuivi, etat);
+                    PushLivresComValider(commandeLivre);
+                    MessageBox.Show("la commande a été ajoutée");
+
+                }
+
+            }
+            catch
+            {
+                MessageBox.Show("le numéro de parution doit être numérique", "Information");
+                txbReceptionExemplaireNumero.Text = "";
+                txbReceptionExemplaireNumero.Focus();
+            }
+        
+        }
+        /// <summary>
+        /// Fait la demande de modification/ ajout au controlleur
+        /// </summary>
+        /// <param name="commandeLivre"></param>
+        private void PushLivresComValider(CommandeDocument commandeLivre)
+        {
+            bool checkValid;
+            if (!ajouterBool)
+                checkValid = controller.UpdateLivreDvdCom(commandeLivre);
+            else
+                checkValid = controller.CreerLivreDvdCom(commandeLivre);
+                //MessageBox.Show((commandeLivre).ToString);
+            if (checkValid)
+            {
+               UpdateLivreCom();
+            }
+            else
+                MessageBox.Show("Erreur");
+        }
+
+        /// <summary>
+        /// Actualise l'affichage des livres apres modification
+        /// </summary>
+        private void UpdateLivreCom()
+        {
+            if (!ajouterBool)
+                RemplirComboSuivi(controller.GetAllSuivis(), bdgLivresComEtat, cbxLivresEtatCom);
+            //EnCoursModifLivresCom(false);
+            try
+            {
+                Livre livre = (Livre)bdgCommandesLivresListe.List[bdgCommandesLivresListe.Position];
+                AfficheLivresCommandeInfos(livre);
+                txbLivresNumLivreCom.Text = livre.Id;
+            }
+            catch
+            {
+                VideLivresZonesCom();
+            }
+        }
+        /// <summary>
+        /// Informe l'utilisateur si les informations sont bien remplit
+        /// </summary>
+        private void VerifValueLivreCom()
+        {
+            float montant = -1;
+            int nbExemplaire = -1;
+            try
+            {
+                montant = float.Parse(txbLivresMontantCom.Text);
+                nbExemplaire = int.Parse(txbLivresNbExemplairesCom.Text);
+            }
+            catch
+            {
+                if (montant == -1)
+                    MessageBox.Show("Le montant doit etre un nombre a virgule");
+                if (nbExemplaire == -1)
+                    MessageBox.Show("Le nombre d'exemplaire doit etre un nombre a entier");
+            }
+            Suivi suivi = (Suivi)cbxLivresEtatCom.SelectedItem;
+            if (suivi == null)
+                MessageBox.Show("Veuillez selectionner un etat");
+        }
+
+        private void btnSupprCommande_Click(object sender, EventArgs e)
+        {
+            CommandeDocument commandeDocument = (CommandeDocument)bdgCommandesLivresListe[bdgCommandesLivresListe.Position];
+
+            if (dgvCommandesListe.CurrentCell != null && txbLivresNbCom.Text != "")
+            {
+                if (commandeDocument.IdSuivi > 2) 
+                    MessageBox.Show("Une commande livrée ou réglée ne peut etre supprimée");
+                else if (MessageBox.Show("Etes vous sur de vouloir supprimer la commande n°" + commandeDocument.Id +
+                    " concernant " + lesLivresCom.Find(o => o.Id == commandeDocument.IdLivreDvd).Titre + " ?",
+                    "Validation suppresion", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    if (controller.SupprimerLivreDvdCom(commandeDocument))
+                        
+                    {
+                        try
+                        {
+                            Livre livre = (Livre)bdgCommandesLivresListe.List[bdgCommandesLivresListe.Position];
+                            AfficheLivresCommandeInfos(livre);
+                            txbLivresNumLivreCom.Text = livre.Id;
+                        }
+                        catch
+                        {
+                            VideLivresZones();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Vous ne pouvez pas supprimer une revue dont des exemplaire existe ");
+            }
+        }
+
+        private void btnLivresNumRechercheCom_Click(object sender, EventArgs e)
+        {
+            if (!txbLivresNumRechercheCom.Text.Equals(""))
+            {
+                Livre livre = lesLivres.Find(x => x.Id.Equals(txbLivresNumRechercheCom.Text));
+                if (livre != null)
+                {
+                    List<Livre> livres = new List<Livre>() { livre };
+                    RemplirLivresListeCom(livres);
+                }
+                else
+                {
+                    MessageBox.Show("numéro introuvable");
+                    RemplirLivresListeCompleteCom();
+                }
+            }
+            else
+            {
+                RemplirLivresListeCompleteCom();
+            }
+        }
+
+        private void dgvLivresListeCom_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             VideLivresZones();
-            string titreColonne = dgvLivresListe2.Columns[e.ColumnIndex].HeaderText;
+            string titreColonne = dgvLivresListeCom.Columns[e.ColumnIndex].HeaderText;
             List<Livre> sortedList = new List<Livre>();
             switch (titreColonne)
             {
@@ -1408,16 +1655,9 @@ namespace MediaTekDocuments.view
             }
             RemplirLivresListe(sortedList);
         }
-
-        /// <summary>
-        /// Sur la sélection d'une ligne ou cellule dans le grid
-        /// affichage des informations du livre
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dgvLivresListe2_SelectionChanged(object sender, EventArgs e)
+        private void dgvLivresListeCom_SelectionChanged(object sender, EventArgs e)
         {
-            if (dgvLivresListe2.CurrentCell != null)
+            if (dgvLivresListeCom.CurrentCell != null)
             {
                 try
                 {
@@ -1426,7 +1666,7 @@ namespace MediaTekDocuments.view
                 }
                 catch
                 {
-                    VideLivresZones2();
+                    VideLivresZonesCom();
                 }
             }
             else
@@ -1434,108 +1674,45 @@ namespace MediaTekDocuments.view
                 VideLivresInfos();
             }
         }
-        #region Onglet Commande de livres
-        private readonly BindingSource bdgCommandesLivresListe = new BindingSource();
-        private List<CommandeDocument> lesCommandes = new List<CommandeDocument>();
-        #endregion
-        /// <summary>
-        /// Remplit le dategrid avec la liste reçue en paramètre
-        /// </summary>
-        /// <param name="livres">liste de livres</param>
-        private void RemplirLivresCommandesListe(List<CommandeDocument> lesCommandes)
+
+        private void btnModifCommande_Click(object sender, EventArgs e)
         {
-            if (lesCommandes.Count > 0)
-            {
-                bdgCommandesLivresListe.DataSource = lesCommandes;
-                dgvCommandesListe.DataSource = bdgCommandesLivresListe;
-                dgvCommandesListe.Columns["idLivreDvd"].Visible = false;
-                dgvCommandesListe.Columns["idSuivi"].Visible = false;
-                dgvCommandesListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-                dgvCommandesListe.Columns["id"].DisplayIndex = 0;
-                dgvCommandesListe.Columns["dateCommande"].DisplayIndex = 1;
-                dgvCommandesListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            }
-            else
-            {
-                dgvCommandesListe.Columns.Clear();
-            }
-        }
 
-        /// <summary>
-        /// Récupère et affiche les commandes d'un livre
-        /// </summary>
-        /// <param name="livre"></param>
-        private void AfficheLivresCommandeInfos(Livre livre)
-        {
-            string idLivre = livre.Id;
-            lesCommandes = controller.GetCommandesLivres(idLivre);
-            groupBox1.Text = livre.Titre;
-
-            if (lesCommandes.Count == 0)
-                VideLivresComInfos();
-            RemplirLivresCommandesListe(lesCommandes);
-        }
-
-
-
-        public void RemplirComboSuivi(List<Suivi> lesSuivis, BindingSource bdg, ComboBox cbx)
-        {
-            bdg.DataSource = lesSuivis;
-            cbx.DataSource = bdg;
-            if (cbx.Items.Count > 0)
-            {
-                cbx.SelectedIndex = -1;
-            }
-        }
-        private void AfficheLivresComInfo(CommandeDocument laCommande)
-        {
-            txbLivresNbCommande.Text = laCommande.Id;
-            txbLivresNumLivre.Text = laCommande.IdLivreDvd;
-            dtpLivresDateCommande.Value = laCommande.DateCommande;
-            txbLivresMontant.Text = laCommande.Montant.ToString();
-            txbLivresNbExemplaires.Text = laCommande.NbExemplaire.ToString();
-            cbxLivresCommandeEtat.SelectedIndex = cbxLivresCommandeEtat.FindString(laCommande.Etat);
-        }
-
-        private void VideLivresComInfos()
-        {
-            txbLivresNbCommande.Text = "";
-            dtpLivresDateCommande.Value = DateTime.Now.Date;
-            txbLivresMontant.Text = "";
-            txbLivresNbExemplaires.Text = "";
-            cbxLivresCommandeEtat.SelectedIndex = -1;
-        }
-
-        private void dgvCommandesListe_SelectionChanged(object sender, EventArgs e)
-        {
-            if (dgvCommandesListe.CurrentCell != null)
-            {
-                try
-                {
-                    CommandeDocument commandeDocument = (CommandeDocument)bdgCommandesLivresListe[bdgCommandesLivresListe.Position];
-                    AfficheLivresComInfo(commandeDocument);
-                    Console.WriteLine(commandeDocument.Etat);
-                }
-                catch
-                {
-                    VideLivresComInfos();
-                }
-            }
-            else
-            {
-                VideLivresComInfos();
-            }
         }
     }
-        
+
+        /// <summary>
+        /// Actualise l'affichage des livres apres modification
+        /// </summary>
+        /* private void UpdateLivreCom()
+         {
+             if (!ajouterBool)
+                 RemplirComboSuivi(controller.GetAllSuivis(), bdgLivresComEtat, cbxLivresComEtat);
+             EnCoursModifLivresCom(false);
+             try
+             {
+                 Livre livre = (Livre)bdgLivresComListe.List[bdgLivresComListe.Position];
+                 AfficheLivresCommandeInfos(livre);
+                 txbLivresComNumLivre.Text = livre.Id;
+             }
+             catch
+             {
+                 VideLivresComZones();
+             }
+         }*/
+
+
         /// <summary>
         /// Affichage de la liste complète des livres
         /// et annulation de toutes les recherches et filtres
         /// </summary>
-       // private void RemplirCommandesListeComplete()
+        // private void RemplirCommandesListeComplete()
         //{
-          //  RemplirCommandesListe(lesCommandes);
-            //VideLivresZones();
+        //  RemplirCommandesListe(lesCommandes);
+        //VideLivresZones();
         //}
+
     
+    #endregion
+
 }

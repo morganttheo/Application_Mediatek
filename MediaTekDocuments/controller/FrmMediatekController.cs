@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using MediaTekDocuments.model;
 using MediaTekDocuments.dal;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Windows.Forms;
 
 namespace MediaTekDocuments.controller
 {
@@ -96,6 +99,38 @@ namespace MediaTekDocuments.controller
         {
             return access.CreerExemplaire(exemplaire);
         }
+        /*/// <summary>
+        /// Supprime une commande livre/Dvd dans la bdd
+        /// </summary>
+        /// <param name="commandeLivreDvd"></param>
+        /// <returns></returns>
+        public bool SupprimerLivreDvdCom(CommandeDocument commandeLivreDvd)
+        {
+            return access.SupprimerEntite("commandedocument", commandeLivreDvd);
+        }*/
+
+        /// <summary>
+        /// Modification du convertisseur Json pour gérer le format de date
+        /// </summary>
+        private sealed class CustomDateTimeConverter : IsoDateTimeConverter
+        {
+            public CustomDateTimeConverter()
+            {
+                base.DateTimeFormat = "yyyy-MM-dd";
+            }
+        }
+        /// <summary>
+        /// Supprime une commande livre/Dvd dans la bdd
+        /// </summary>
+        /// <param name="commandeLivreDvd"></param>
+        /// <returns></returns>
+        public bool SupprimerLivreDvdCom(CommandeDocument commandeLivreDvd)
+        {
+           // MessageBox.Show(JsonConvert.SerializeObject(commandeLivreDvd));
+            return access.SupprimerEntite("commandedocument", JsonConvert.SerializeObject(commandeLivreDvd, new CustomDateTimeConverter()));
+            
+        }
+
 
 
         /// <summary>
@@ -107,6 +142,15 @@ namespace MediaTekDocuments.controller
         {
             return access.GetCommandesLivres(idLivre);
         }
+
+        /// <summary>
+        /// Retourne l'id max des commandes
+        /// </summary>
+        /// <returns></returns>
+        public string GetNbCommandeMax()
+        {
+            return access.GetMaxIndex("maxcommande");
+        }
         /// <summary>
         /// getter sur les etats
         /// </summary>
@@ -115,5 +159,25 @@ namespace MediaTekDocuments.controller
         {
             return access.GetAllSuivis();
         }
+
+        /// <summary>
+        /// Creer une commande livre/Dvd dans la bdd
+        /// </summary>
+        /// <param name="commandeLivreDvd"></param>
+        /// <returns></returns>
+        public bool CreerLivreDvdCom(CommandeDocument commandeLivreDvd)
+        {
+            return access.CreerEntite("commandedocument", commandeLivreDvd);
+        }
+        /// <summary>
+        /// Modifie une commande livre/Dvd dans la bdd
+        /// </summary>
+        /// <param name="commandeLivreDvd"></param>
+        /// <returns></returns>
+        public bool UpdateLivreDvdCom(CommandeDocument commandeLivreDvd)
+        {
+            return access.UpdateEntite("commandedocument", commandeLivreDvd.Id, commandeLivreDvd);
+        }
+
     }
 }

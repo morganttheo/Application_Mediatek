@@ -1,11 +1,11 @@
-﻿    using System;
-using System.Collections.Generic;
+﻿using MediaTekDocuments.manager;
 using MediaTekDocuments.model;
-using MediaTekDocuments.manager;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using System.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace MediaTekDocuments.dal
 {
@@ -36,7 +36,12 @@ namespace MediaTekDocuments.dal
         private const string POST = "POST";
         /// <summary>
         /// méthode HTTP pour update
-
+        private const string PUT = "PUT";
+        ///</summary 
+        /// <summary>
+        /// méthode HTTP pour delete
+        /// </summary>
+        private const string DELETE = "DELETE";
         /// <summary>
         /// Méthode privée pour créer un singleton
         /// initialise l'accès à l'API
@@ -47,7 +52,7 @@ namespace MediaTekDocuments.dal
             try
             {
                 authenticationString = "admin:adminpwd";
- 
+
                 api = ApiRest.GetInstance(uriApi, authenticationString);
             }
             catch (Exception e)
@@ -63,7 +68,7 @@ namespace MediaTekDocuments.dal
         /// <returns>instance unique de la classe</returns>
         public static Access GetInstance()
         {
-            if(instance == null)
+            if (instance == null)
             {
                 instance = new Access();
             }
@@ -174,6 +179,86 @@ namespace MediaTekDocuments.dal
         }
 
         /// <summary>
+        /// Retourne l'index max en string
+        /// de certaines tables
+        /// </summary>
+        /// <param name="maxIndex"></param>
+        /// <returns></returns>
+        public string GetMaxIndex(string maxIndex)
+        {
+            List<Categorie> maxindex = TraitementRecup<Categorie>(GET, maxIndex);
+            return maxindex[0].Id;
+        }
+
+        /// <summary>
+        /// Créer une entite dans la BDD, return true si l'opération s'est correctement déroulée
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="commandeLivreDvd"></param>
+        /// <returns></returns>
+        public bool CreerEntite(string type, CommandeDocument commandeLivreDvd)
+        {
+            String jsonEntite = JsonConvert.SerializeObject(commandeLivreDvd, new CustomDateTimeConverter());
+            try
+            {
+                // récupération soit d'une liste vide (requête ok) soit de null (erreur)
+                List<Object> liste = TraitementRecup<Object>(POST, type + "/" + jsonEntite);
+                return (liste != null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return false;
+
+        }
+        /// <summary>
+        ///Modifie une entite dans la BDD, return true si l'opération, c'est correctement déroulé
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="id"></param>
+        /// <param name="commandeLivreDvd"></param>
+        /// <returns></returns>
+        public bool UpdateEntite(string type, string id, CommandeDocument commandeLivreDvd)
+        {
+            String jsonEntite = JsonConvert.SerializeObject(commandeLivreDvd, new CustomDateTimeConverter());
+
+            try
+            {
+                // récupération soit d'une liste vide (requête ok) soit de null (erreur)
+                List<Object> liste = TraitementRecup<Object>(PUT, type + "/" + id + "/" + jsonEntite);
+                return (liste != null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Supprime une entité dans la BDD, return true si l'opération s'est correctement déroulée
+        /// </summary>
+        /// <param name="jsonEntite"></param>
+        /// <returns></returns>
+        public bool SupprimerEntite(string type, String jsonEntite)
+        {
+            try
+            {
+                // récupération soit d'une liste vide (requête ok) soit de null (erreur)
+                List<Object> liste = TraitementRecup<Object>(DELETE, type + "/" + jsonEntite);
+                
+
+                return (liste != null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return false;
+        }
+
+        /// <summary>
         /// ecriture d'un exemplaire en base de données
         /// </summary>
         /// <param name="exemplaire">exemplaire à insérer</param>
@@ -181,7 +266,8 @@ namespace MediaTekDocuments.dal
         public bool CreerExemplaire(Exemplaire exemplaire)
         {
             String jsonExemplaire = JsonConvert.SerializeObject(exemplaire, new CustomDateTimeConverter());
-            try {
+            try
+            {
                 // récupération soit d'une liste vide (requête ok) soit de null (erreur)
                 List<Exemplaire> liste = TraitementRecup<Exemplaire>(POST, "exemplaire/" + jsonExemplaire);
                 return (liste != null);
@@ -190,7 +276,7 @@ namespace MediaTekDocuments.dal
             {
                 Console.WriteLine(ex.Message);
             }
-            return false; 
+            return false;
         }
 
         /// <summary>
@@ -200,11 +286,12 @@ namespace MediaTekDocuments.dal
         /// <param name="methode">verbe HTTP (GET, POST, PUT, DELETE)</param>
         /// <param name="message">information envoyée</param>
         /// <returns>liste d'objets récupérés (ou liste vide)</returns>
-        private List<T> TraitementRecup<T> (String methode, String message)
+        private List<T> TraitementRecup<T>(String methode, String message)
         {
             List<T> liste = new List<T>();
             try
             {
+                Console.WriteLine("TraitementRecup " + methode + " et " + message);
                 JObject retour = api.RecupDistant(methode, message);
                 // extraction du code retourné
                 String code = (String)retour["code"];
@@ -222,9 +309,10 @@ namespace MediaTekDocuments.dal
                 {
                     Console.WriteLine("code erreur = " + code + " message = " + (String)retour["message"]);
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                Console.WriteLine("Erreur lors de l'accès à l'API : "+e.Message);
+                Console.WriteLine("Erreur lors de l'accès à l'API : " + e.Message);
                 Environment.Exit(0);
             }
             return liste;
