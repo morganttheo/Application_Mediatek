@@ -131,6 +131,11 @@ namespace MediaTekDocuments.controller
             
         }
 
+        public bool SupprimerAbonnement(Abonnement abonnement)
+        {
+            return access.SupprimerEntite("abonnement", JsonConvert.SerializeObject(abonnement, new CustomDateTimeConverter()));
+        }
+
 
 
         /// <summary>
@@ -141,6 +146,17 @@ namespace MediaTekDocuments.controller
         public List<CommandeDocument> GetCommandesLivres(string idLivre)
         {
             return access.GetCommandesLivres(idLivre);
+
+        }
+
+        /// <summary>
+        /// Retourne tous les abonnements d'une revue
+        /// </summary>
+        /// <param name="idRevue"></param>
+        /// <returns></returns>
+        public List<Abonnement> GetAbonnements(string idRevue)
+        {
+            return access.GetAbonnements(idRevue);
         }
 
         /// <summary>
@@ -177,6 +193,26 @@ namespace MediaTekDocuments.controller
         public bool UpdateLivreDvdCom(CommandeDocument commandeLivreDvd)
         {
             return access.UpdateEntite("commandedocument", commandeLivreDvd.Id, commandeLivreDvd);
+        }
+
+        /// <summary>
+        /// Modifie un abonnement dans la bdd
+        /// </summary>
+        /// <param name="commandeLivreDvd"></param>
+        /// <returns></returns>
+        public bool UpdateAbonnement(Abonnement abonnement)
+        {
+            return access.UpdateEntite2("abonnement", abonnement.Id, abonnement);
+        }
+
+        /// <summary>
+        /// Creer un abonnement dans la bdd
+        /// </summary>
+        /// <param name="commandeLivreDvd"></param>
+        /// <returns></returns>
+        public bool CreerAbonnement(Abonnement abonnement)
+        {
+            return access.CreerEntite2("abonnement", abonnement);
         }
 
     }

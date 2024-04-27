@@ -190,6 +190,17 @@ namespace MediaTekDocuments.dal
             List<Categorie> maxindex = TraitementRecup<Categorie>(GET, maxIndex);
             return maxindex[0].Id;
         }
+        /// <summary>
+        /// Retourne les abonnements d'une revue
+        /// </summary>
+        /// <param name="idRevue"></param>
+        /// <returns></returns>
+        public List<Abonnement> GetAbonnements(string idRevue)
+        {
+            String jsonAbonnementIdRevue = convertToJson("idRevue", idRevue);
+            List<Abonnement> abonnements = TraitementRecup<Abonnement>(GET, "abonnements/" + jsonAbonnementIdRevue);
+            return abonnements;
+        }
 
         /// <summary>
         /// Créer une entite dans la BDD, return true si l'opération s'est correctement déroulée
@@ -237,6 +248,40 @@ namespace MediaTekDocuments.dal
             return false;
         }
 
+
+        public bool CreerEntite2(string type, Abonnement abonnement)
+        {
+            String jsonEntite = JsonConvert.SerializeObject(abonnement, new CustomDateTimeConverter());
+            try
+            {
+                // récupération soit d'une liste vide (requête ok) soit de null (erreur)
+                List<Object> liste = TraitementRecup<Object>(POST, type + "/" + jsonEntite);
+                return (liste != null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return false;
+
+        }
+
+        public bool UpdateEntite2(string type, string id, Abonnement abonnement)
+        {
+            String jsonEntite = JsonConvert.SerializeObject(abonnement, new CustomDateTimeConverter());
+
+            try
+            {
+                // récupération soit d'une liste vide (requête ok) soit de null (erreur)
+                List<Object> liste = TraitementRecup<Object>(PUT, type + "/" + id + "/" + jsonEntite);
+                return (liste != null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return false;
+        }
         /// <summary>
         /// Supprime une entité dans la BDD, return true si l'opération s'est correctement déroulée
         /// </summary>
@@ -258,6 +303,8 @@ namespace MediaTekDocuments.dal
             }
             return false;
         }
+
+
 
         /// <summary>
         /// ecriture d'un exemplaire en base de données

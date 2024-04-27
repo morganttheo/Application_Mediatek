@@ -752,6 +752,18 @@ namespace MediaTekDocuments.view
             dgvRevuesListe.Columns["id"].DisplayIndex = 0;
             dgvRevuesListe.Columns["titre"].DisplayIndex = 1;
         }
+        private void RemplirRevuesListe2(List<Revue> revues)
+        {
+            bdgAboListe.DataSource = revues;
+            dgvRevuesListe2.DataSource = bdgAboListe;
+            dgvRevuesListe2.Columns["idRayon"].Visible = false;
+            dgvRevuesListe2.Columns["idGenre"].Visible = false;
+            dgvRevuesListe2.Columns["idPublic"].Visible = false;
+            dgvRevuesListe2.Columns["image"].Visible = false;
+            dgvRevuesListe2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dgvRevuesListe2.Columns["id"].DisplayIndex = 0;
+            dgvRevuesListe2.Columns["titre"].DisplayIndex = 1;
+        }
 
         /// <summary>
         /// Recherche et affichage de la revue dont on a saisi le numéro.
@@ -840,6 +852,52 @@ namespace MediaTekDocuments.view
             }
         }
 
+        private readonly BindingSource bdgAboListe = new BindingSource();
+        private readonly BindingSource bdgAboListeCommande = new BindingSource();
+        private List<Revue> lesRevuesAbo = new List<Revue>();
+        private List<Abonnement> lesAbonnements = new List<Abonnement>();
+        bool filtre;
+
+
+        private void AfficheAboInfos(Revue revue)
+        {
+            string idRevue = revue.Id;
+            VideAboInfos();
+            lesAbonnements = controller.GetAbonnements(idRevue);
+            grbAbo.Text = revue.Titre;
+
+            if (LesCommandes.Count == 0)
+                VideAboInfos();
+            RemplirAboListeCommandes(lesAbonnements);
+        }
+
+        private void RemplirAboListeCommandes(List<Abonnement> LesAbonnements)
+        {
+            if (LesAbonnements.Count > 0)
+            {
+                bdgAboListeCommande.DataSource = LesAbonnements;
+                dgvDétailAbo.DataSource = bdgAboListeCommande;
+                dgvDétailAbo.Columns["idRevue"].Visible = false;
+                dgvDétailAbo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                dgvDétailAbo.Columns["id"].DisplayIndex = 0;
+                dgvDétailAbo.Columns["dateCommande"].DisplayIndex = 1;
+                dgvDétailAbo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            }
+            else
+            {
+                dgvDétailAbo.Columns.Clear();
+            }
+
+        }
+
+        private void VideAboInfos()
+        {
+            txbNumAbo.Text = "";
+            dtpDateAbo.Value = DateTime.Now.Date;
+            txbMontantAbo.Text = "";
+            dtpDateFinAbo.Value = DateTime.Now.Date.AddMonths(6);
+        }
+        
         /// <summary>
         /// Vide les zones d'affichage des informations de la reuve
         /// </summary>
@@ -979,6 +1037,12 @@ namespace MediaTekDocuments.view
             VideRevuesZones();
         }
 
+        private void RemplirRevuesListeComplete2()
+        {
+            RemplirRevuesListe2(lesRevues);
+            VideRevuesZones2();
+        }
+
         /// <summary>
         /// vide les zones de recherche et de filtre
         /// </summary>
@@ -989,6 +1053,13 @@ namespace MediaTekDocuments.view
             cbxRevuesPublics.SelectedIndex = -1;
             txbRevuesNumRecherche.Text = "";
             txbRevuesTitreRecherche.Text = "";
+        }
+
+        private void VideRevuesZones2()
+        {
+           
+            txbRevuesNumRecherche2.Text = "";
+            txbRevuesTitreRecherche2.Text = "";
         }
 
         /// <summary>
@@ -1302,6 +1373,8 @@ namespace MediaTekDocuments.view
         private readonly BindingSource bdgCommandesDvdListe = new BindingSource();
         private List<Dvd> lesDvdCom = new List<Dvd>();
 
+        
+
 
         /// <summary>
         /// Ouverture de l'onglet Livres : 
@@ -1476,6 +1549,16 @@ namespace MediaTekDocuments.view
             txbDvdNbExemplaireCom.Text = laCommande.NbExemplaire.ToString();
             cbxDvdEtatCom.SelectedIndex = cbxDvdEtatCom.FindString(laCommande.Etat);
         }
+        private void AfficheAboInfo(Abonnement labonnement)
+        {
+            txbNumAbo.Text = labonnement.Id;
+            dtpDateAbo.Value = labonnement.DateCommande;
+            txbMontantAbo.Text = labonnement.Montant.ToString();
+            dtpDateFinAbo.Value = labonnement.DateFinAbonnement;
+            txbNumRevue.Text = labonnement.IdRevue;
+
+        }
+        
 
         private void VideLivresComInfos()
         {
@@ -1953,43 +2036,309 @@ namespace MediaTekDocuments.view
                 txbReceptionExemplaireNumero.Focus();
             }
         }
+
+        private void tabAbonnement_Enter(object sender, EventArgs e)
+        {
+            lesRevues = controller.GetAllRevues();
+            RemplirRevuesListeComplete2();
+            AfficherAlerteAbo();
+
+        }
+
+        private void btnRevuesNumRecherche2_Click(object sender, EventArgs e)
+        {
+            if (!txbRevuesNumRecherche2.Text.Equals(""))
+            {
+                txbRevuesTitreRecherche2.Text = "";
+                Revue revue = lesRevues.Find(x => x.Id.Equals(txbRevuesNumRecherche2.Text));
+                if (revue != null)
+                {
+                    List<Revue> revues = new List<Revue>() { revue };
+                    RemplirRevuesListe2(revues);
+                }
+                else
+                {
+                    MessageBox.Show("numéro introuvable");
+                    RemplirRevuesListeComplete2();
+                }
+            }
+            else
+            {
+                RemplirRevuesListeComplete2();
+            }
+        }
+
+        private void txbRevuesTitreRecherche2_TextChanged(object sender, EventArgs e)
+        {
+            if (!txbRevuesTitreRecherche2.Text.Equals(""))
+            {
+                txbRevuesNumRecherche2.Text = "";
+                List<Revue> lesRevuesParTitre;
+                lesRevuesParTitre = lesRevues.FindAll(x => x.Titre.ToLower().Contains(txbRevuesTitreRecherche2.Text.ToLower()));
+                RemplirRevuesListe2(lesRevuesParTitre);
+            }
+            else
+            {
+                // si la zone de saisie est vide et aucun élément combo sélectionné, réaffichage de la liste complète
+                if (txbRevuesNumRecherche2.Text.Equals(""))
+                {
+                    RemplirRevuesListeComplete2();
+                }
+            }
+        }
+
+        private void dgvRevuesListe2_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvRevuesListe2.CurrentCell != null)
+            {
+                try
+                {
+                    Revue revue = (Revue)bdgAboListe.List[bdgAboListe.Position];
+                    grbAbo.Text = revue.Titre;
+                    AfficheAboInfos(revue);
+                }
+
+                catch
+                {
+                    VideLivresZonesCom();
+                }
+            }
+            else
+            {
+                VideLivresInfos();
+            }
+        }
+
+        private void dgvDétailAbo_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvDétailAbo.CurrentCell != null)
+            {
+                try
+                {
+                    Abonnement abonnement = (Abonnement)bdgAboListeCommande[bdgAboListeCommande.Position];
+                    AfficheAboInfo(abonnement);
+                }
+                catch
+                {
+                    VideAboInfos();
+                }
+            }
+            else
+            {
+                VideAboInfos();
+            }
+        }
+
+        private void btnAjoutAbo_Click(object sender, EventArgs e)
+        {
+            ajouterBool = true;
+            string id = PlusUnIdString(controller.GetNbCommandeMax());
+            if (id == "1")
+                id = "00001";
+            VideAboInfos();
+            dtpDateAbo.Value = DateTime.Now;
+            dtpDateFinAbo.Value = DateTime.Now.AddMonths(2);
+            txbNumAbo.Text = id;
+            Console.WriteLine("btnAboAjouter_Click  " + id);
+        }
+
+        private void btnValidAbo_Click(object sender, EventArgs e)
+        {
+            bool checkValid;
+            if (MessageBox.Show("Etes vous sur ?", "oui ?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                string id = txbNumAbo.Text;
+                double montant = 0;
+                double? b = null;
+                try
+                {
+                    montant = double.Parse(txbMontantAbo.Text);
+                    b = montant;
+                }
+                catch
+                {
+                    MessageBox.Show("Le montant doit etre un chiffre a virgule");
+                }
+                DateTime dateDeCommande = dtpDateAbo.Value;
+                DateTime dateFin = dtpDateFinAbo.Value;
+                string idRevue = txbNumRevue.Text;
+                if (b != null && dateDeCommande <= dateFin && idRevue != "")
+                {
+                    Abonnement abonnement = new Abonnement(id, dateDeCommande, montant, dateFin, idRevue);
+                    if (!ajouterBool)
+                        checkValid = controller.UpdateAbonnement(abonnement);
+                    else
+                        checkValid = controller.CreerAbonnement(abonnement);
+                    if (checkValid)
+                    {
+                      /*  EnCoursModifAbo(false);
+                        Thread.Sleep(100);
+                        lesRevuesAbo = controller.GetAllRevues();
+                        RemplirAboListeComplete();*/
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Erreur");
+                }
+            }
+        }
+
+        private void btnModifAbo_Click(object sender, EventArgs e)
+        {
+            if (dgvDétailAbo.CurrentCell != null && txbNumAbo.Text != "")
+            {
+                //EnCoursModifAbo(true);
+            }
+            else
+            {
+                MessageBox.Show("Aucune revue sélectionnée");
+            }
+        }
+
+        private bool VerrifExemplaireAbo(Abonnement abonnement)
+        {
+            List<Exemplaire> lesExemplairesAbo = controller.GetExemplairesRevue(abonnement.IdRevue);
+            return lesExemplairesAbo.FindAll(o => (o.DateAchat >= abonnement.DateCommande) && (o.DateAchat <= abonnement.DateCommande)).Count > 0;
+        }
+
+        private void btnSupprAbo_Click(object sender, EventArgs e)
+        {
+            Abonnement abonnement = (Abonnement)bdgAboListeCommande[bdgAboListeCommande.Position];
+            if (dgvDétailAbo.CurrentCell != null && txbNumAbo.Text != "")
+            {
+                if (VerrifExemplaireAbo(abonnement))
+                    MessageBox.Show("Une revue a été livrée le temps de cet abonnement, il ne peut etre supprimée");
+                else if (MessageBox.Show("Etes vous sur de vouloir supprimer la commande n°" + abonnement.Id +
+                    " concernant " + lesRevues.Find(o => o.Id == abonnement.IdRevue).Titre + " ?",
+                    "Validation suppresion", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    if (controller.SupprimerAbonnement(abonnement))
+                    {
+                        //Thread.Sleep(50);
+                        try
+                        {
+                            Revue Revue = (Revue)bdgAboListe.List[bdgAboListe.Position];
+                            AfficheAboInfos(Revue);
+                            txbNumRevue.Text = Revue.Id;
+                        }
+                        catch
+                        {
+                            VideAboInfos();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Erreur");
+                }
+               
+            }
+            else
+            {
+                MessageBox.Show("Veuillez selectionner une abonnement");
+            }
+        }
+        private void AfficherAlerteAbo()
+        {
+           // if (controller.VerifCommande(utilisateur))
+           // {
+                bool interupteur = false;
+                List<Revue> revues = controller.GetAllRevues();
+                string alerteRevues = "Revues dont l'abonnement se termine dans moins de 30 jours : \n";
+                foreach (Revue revue in revues)
+                {
+                    List<Abonnement> abonnements = controller.GetAbonnements(revue.Id);
+                    if (abonnements.FindAll(o => (o.DateFinAbonnement <= DateTime.Now.AddMonths(1))
+                                && (o.DateFinAbonnement >= DateTime.Now)).Count > 0)
+                    {
+                        alerteRevues = string.Concat(alerteRevues, "  -" + revue.Titre + "\n");
+                        interupteur = true;
+                    }
+                }
+                if (interupteur)
+                    MessageBox.Show(alerteRevues);
+           // }
+        }
+
+        private void RemplirAboListeComplete()
+        {
+            RemplirRevuesListe2(lesRevuesAbo);
+            VideRevuesZones2();
+        }
+
+
+        private void btnAboFiltreRevue_Click(object sender, EventArgs e)
+        {
+            if (filtre)
+            {
+                lesRevuesAbo = controller.GetAllRevues();
+                btnAboFiltreRevue.Text = "Filtrer";
+                filtre = false;
+            }
+            else
+            {
+                List<Revue> listeTrie = new List<Revue>();
+                foreach (Revue revue in lesRevuesAbo)
+                {
+                    List<Abonnement> abonnements = controller.GetAbonnements(revue.Id);
+                    if (abonnements.FindAll(o => (o.DateFinAbonnement <= DateTime.Now.AddMonths(1))
+                            && (o.DateFinAbonnement >= DateTime.Now)).Count > 0)
+                        listeTrie.Add(revue);
+                }
+                lesRevuesAbo = listeTrie;
+                btnAboFiltreRevue.Text = "X";
+                filtre = true;
+            }
+            RemplirAboListeComplete();
+        }
     }
     
-    
-    
 
-        /// <summary>
-        /// Actualise l'affichage des livres apres modification
-        /// </summary>
-        /* private void UpdateLivreCom()
+
+
+
+
+    /// <summary>
+    /// Actualise l'affichage des livres apres modification
+    /// </summary>
+    /* private void UpdateLivreCom()
+     {
+         if (!ajouterBool)
+             RemplirComboSuivi(controller.GetAllSuivis(), bdgLivresComEtat, cbxLivresComEtat);
+         EnCoursModifLivresCom(false);
+         try
          {
-             if (!ajouterBool)
-                 RemplirComboSuivi(controller.GetAllSuivis(), bdgLivresComEtat, cbxLivresComEtat);
-             EnCoursModifLivresCom(false);
-             try
-             {
-                 Livre livre = (Livre)bdgLivresComListe.List[bdgLivresComListe.Position];
-                 AfficheLivresCommandeInfos(livre);
-                 txbLivresComNumLivre.Text = livre.Id;
-             }
-             catch
-             {
-                 VideLivresComZones();
-             }
-         }*/
+             Livre livre = (Livre)bdgLivresComListe.List[bdgLivresComListe.Position];
+             AfficheLivresCommandeInfos(livre);
+             txbLivresComNumLivre.Text = livre.Id;
+         }
+         catch
+         {
+             VideLivresComZones();
+         }
+     }*/
 
 
-        /// <summary>
-        /// Affichage de la liste complète des livres
-        /// et annulation de toutes les recherches et filtres
-        /// </summary>
-        // private void RemplirCommandesListeComplete()
-        //{
-        //  RemplirCommandesListe(lesCommandes);
-        //VideLivresZones();
-        //}
+    /// <summary>
+    /// Affichage de la liste complète des livres
+    /// et annulation de toutes les recherches et filtres
+    /// </summary>
+    // private void RemplirCommandesListeComplete()
+    //{
+    //  RemplirCommandesListe(lesCommandes);
+    //VideLivresZones();
+    //}
 
-    
+
     #endregion
 
 }
