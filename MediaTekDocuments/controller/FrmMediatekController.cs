@@ -17,6 +17,17 @@ namespace MediaTekDocuments.controller
         /// </summary>
         private readonly Access access;
 
+        private static readonly List<string> services = new List<string> { "administratif", "prets  ", "culture" };
+        /// <summary>
+        /// Services ayant droit de modification
+        /// </summary>
+        private static readonly List<string> servicesModif = new List<string> { "administratif", "cuture" };
+        /// <summary>
+        /// Services ayant droits au commandes
+        /// </summary>
+        private static readonly List<string> servicesCommande = new List<string> { "administratif" };
+
+
         /// <summary>
         /// Récupération de l'instance unique d'accès aux données
         /// </summary>
@@ -134,6 +145,27 @@ namespace MediaTekDocuments.controller
         public bool SupprimerAbonnement(Abonnement abonnement)
         {
             return access.SupprimerEntite("abonnement", JsonConvert.SerializeObject(abonnement, new CustomDateTimeConverter()));
+        }
+
+        public bool VerifDroitModif(Utilisateur utilisateur)
+        {
+            if (servicesModif.Contains(utilisateur.Service.Libelle))
+                return true;
+            return false;
+        }
+
+        public bool VerifDroitAccueil(Utilisateur utilisateur)
+        {
+            if (services.Contains(utilisateur.Service.Libelle))
+                return true;
+            return false;
+        }
+
+        public bool VerifCommande(Utilisateur utilisateur)
+        {
+            if (servicesCommande.Contains(utilisateur.Service.Libelle))
+                return true;
+            return false;
         }
 
 

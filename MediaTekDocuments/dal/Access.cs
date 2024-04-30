@@ -1,11 +1,17 @@
 ﻿using MediaTekDocuments.manager;
 using MediaTekDocuments.model;
+using Microsoft.VisualBasic.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System;
+using Serilog;
+using System.Configuration;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Log = Serilog.Log;
+
+
 
 namespace MediaTekDocuments.dal
 {
@@ -17,7 +23,13 @@ namespace MediaTekDocuments.dal
         /// <summary>
         /// adresse de l'API
         /// </summary>
+        /// 
         private static readonly string uriApi = "http://localhost/rest_mediatekdocuments/";
+
+        private static readonly string uriApiName = "MediaTekDocuments.Properties.Settings.mediatekConnectionString";
+
+        private static readonly string authenticationName = "MediaTekDocuments.Properties.Settings.mediatekAuthenticationString";
+
         /// <summary>
         /// instance unique de la classe
         /// </summary>
@@ -46,9 +58,27 @@ namespace MediaTekDocuments.dal
         /// Méthode privée pour créer un singleton
         /// initialise l'accès à l'API
         /// </summary>
+        /// 
         private Access()
         {
-            String authenticationString;
+            try
+            {
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Verbose()
+                    .WriteTo.File(@"C:\logs\log.txt")
+                    .CreateLogger();
+                String authenticationString = GetAuthentificationString(authenticationName);
+                //String uriApi = GetAuthentificationString(uriApiName);
+                api = ApiRest.GetInstance(uriApi, authenticationString);
+            }
+            catch (Exception e)
+            {
+                Log.Fatal("Access catch erreur={0}", e.Message);
+                Console.WriteLine(e.Message);
+                Environment.Exit(0);
+            }
+
+            /*String authenticationString;
             try
             {
                 authenticationString = "admin:adminpwd";
@@ -59,7 +89,7 @@ namespace MediaTekDocuments.dal
             {
                 Console.WriteLine(e.Message);
                 Environment.Exit(0);
-            }
+            }*/
         }
 
         /// <summary>
@@ -180,6 +210,20 @@ namespace MediaTekDocuments.dal
         }
 
         /// <summary>
+        /// Récupération de la chaîne de connexion
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        static string GetAuthentificationString(string name)
+        {
+            string returnValue = null;
+            ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[name];
+            if (settings != null)
+                returnValue = settings.ConnectionString;
+            return returnValue;
+        }
+
+        /// <summary>
         /// Retourne l'index max en string
         /// de certaines tables
         /// </summary>
@@ -219,6 +263,7 @@ namespace MediaTekDocuments.dal
             }
             catch (Exception ex)
             {
+                Log.Error("Access.CreerEntite catch type erreur={0}, table={1}, champs={2}", ex, type, jsonEntite);
                 Console.WriteLine(ex.Message);
             }
             return false;
@@ -243,6 +288,8 @@ namespace MediaTekDocuments.dal
             }
             catch (Exception ex)
             {
+                Log.Error("Access.UpdateEntite catch type erreur={0}, table={1}, champs={2}", ex, type, jsonEntite);
+
                 Console.WriteLine(ex.Message);
             }
             return false;
@@ -299,10 +346,27 @@ namespace MediaTekDocuments.dal
             }
             catch (Exception ex)
             {
+                Log.Error("Access.UpdateEntite catch type erreur={0}, table={1}, champs={2}", ex, type, jsonEntite);
                 Console.WriteLine(ex.Message);
             }
             return false;
         }
+        public Utilisateur GetLogin(string mail, string hash)
+        {
+            Dictionary<string, string> login = new Dictionary<string, string>
+            {
+                { "mail", mail },
+                { "password", hash }
+            };
+            String mailHash = JsonConvert.SerializeObject(login);
+            List<Utilisateur> utilisateurs = TraitementRecup<Utilisateur>(GET, "utilisateur/" + mailHash);
+            Console.Write(mailHash);
+            if (utilisateurs.Count > 0)
+                return utilisateurs[0];
+            Log.Error("Access.GetLogin catch user fail connection :" + mail);
+            return null;
+        }
+
 
 
 
@@ -322,6 +386,7 @@ namespace MediaTekDocuments.dal
             }
             catch (Exception ex)
             {
+                Log.Error("Access.CreerExemplaire catch type erreur={0} champs={1}", ex, jsonExemplaire);
                 Console.WriteLine(ex.Message);
             }
             return false;
@@ -356,6 +421,8 @@ namespace MediaTekDocuments.dal
                 else
                 {
                     Console.WriteLine("code erreur = " + code + " message = " + (String)retour["message"]);
+                    Log.Error("Access.TraitementRecup code erreur = " + code + " message = " + (String)retour["message"]);
+
                 }
             }
             catch (Exception e)

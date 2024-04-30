@@ -247,14 +247,14 @@ namespace MediaTekDocuments.view
             this.label79 = new System.Windows.Forms.Label();
             this.label80 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnAboFiltreRevue = new System.Windows.Forms.Button();
+            this.label81 = new System.Windows.Forms.Label();
             this.btnRevuesNumRecherche2 = new System.Windows.Forms.Button();
             this.label74 = new System.Windows.Forms.Label();
             this.txbRevuesNumRecherche2 = new System.Windows.Forms.TextBox();
             this.dgvRevuesListe2 = new System.Windows.Forms.DataGridView();
             this.label78 = new System.Windows.Forms.Label();
             this.txbRevuesTitreRecherche2 = new System.Windows.Forms.TextBox();
-            this.label81 = new System.Windows.Forms.Label();
-            this.btnAboFiltreRevue = new System.Windows.Forms.Button();
             this.tabOngletsApplication.SuspendLayout();
             this.tabLivres.SuspendLayout();
             this.grpLivresInfos.SuspendLayout();
@@ -2753,6 +2753,27 @@ namespace MediaTekDocuments.view
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Recherches";
             // 
+            // btnAboFiltreRevue
+            // 
+            this.btnAboFiltreRevue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAboFiltreRevue.Location = new System.Drawing.Point(746, 71);
+            this.btnAboFiltreRevue.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAboFiltreRevue.Name = "btnAboFiltreRevue";
+            this.btnAboFiltreRevue.Size = new System.Drawing.Size(128, 27);
+            this.btnAboFiltreRevue.TabIndex = 16;
+            this.btnAboFiltreRevue.Text = "Filtrer";
+            this.btnAboFiltreRevue.UseVisualStyleBackColor = true;
+            this.btnAboFiltreRevue.Click += new System.EventHandler(this.btnAboFiltreRevue_Click);
+            // 
+            // label81
+            // 
+            this.label81.AutoSize = true;
+            this.label81.Location = new System.Drawing.Point(632, 27);
+            this.label81.Name = "label81";
+            this.label81.Size = new System.Drawing.Size(406, 17);
+            this.label81.TabIndex = 15;
+            this.label81.Text = "Revues dont l\'abonnement se termine dans moins de 30 jours :";
+            // 
             // btnRevuesNumRecherche2
             // 
             this.btnRevuesNumRecherche2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -2823,27 +2844,6 @@ namespace MediaTekDocuments.view
             this.txbRevuesTitreRecherche2.TabIndex = 3;
             this.txbRevuesTitreRecherche2.TextChanged += new System.EventHandler(this.txbRevuesTitreRecherche2_TextChanged);
             // 
-            // label81
-            // 
-            this.label81.AutoSize = true;
-            this.label81.Location = new System.Drawing.Point(632, 27);
-            this.label81.Name = "label81";
-            this.label81.Size = new System.Drawing.Size(406, 17);
-            this.label81.TabIndex = 15;
-            this.label81.Text = "Revues dont l\'abonnement se termine dans moins de 30 jours :";
-            // 
-            // btnAboFiltreRevue
-            // 
-            this.btnAboFiltreRevue.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAboFiltreRevue.Location = new System.Drawing.Point(746, 71);
-            this.btnAboFiltreRevue.Margin = new System.Windows.Forms.Padding(4);
-            this.btnAboFiltreRevue.Name = "btnAboFiltreRevue";
-            this.btnAboFiltreRevue.Size = new System.Drawing.Size(128, 27);
-            this.btnAboFiltreRevue.TabIndex = 16;
-            this.btnAboFiltreRevue.Text = "Filtrer";
-            this.btnAboFiltreRevue.UseVisualStyleBackColor = true;
-            this.btnAboFiltreRevue.Click += new System.EventHandler(this.btnAboFiltreRevue_Click);
-            // 
             // FrmMediatek
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -2853,6 +2853,7 @@ namespace MediaTekDocuments.view
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmMediatek";
             this.Text = "Gestion des documents de la médiathèque";
+            this.Load += new System.EventHandler(this.FrmMediatek_Load);
             this.tabOngletsApplication.ResumeLayout(false);
             this.tabLivres.ResumeLayout(false);
             this.grpLivresInfos.ResumeLayout(false);

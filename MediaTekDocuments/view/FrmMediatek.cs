@@ -29,10 +29,30 @@ namespace MediaTekDocuments.view
         /// <summary>
         /// Constructeur : création du contrôleur lié à ce formulaire
         /// </summary>
-        internal FrmMediatek()
+        /* internal FrmMediatek()
+         {
+             InitializeComponent();
+             this.controller = new FrmMediatekController();
+         }*/
+
+        public FrmMediatek(Utilisateur lutilisateur)
         {
             InitializeComponent();
             this.controller = new FrmMediatekController();
+            this.utilisateur = lutilisateur;
+            VerifDroitAccueil(lutilisateur);
+        }
+        /// <summary>
+        /// Vérifie si les droits utilisateur
+        /// </summary>
+        /// <param name="lutilisateur"></param>
+        private void VerifDroitAccueil(Utilisateur lutilisateur)
+        {
+            if (!controller.VerifDroitAccueil(lutilisateur))
+            {
+                MessageBox.Show("Droits insuffisant");
+                Application.Exit();
+            }
         }
 
         /// <summary>
@@ -56,6 +76,7 @@ namespace MediaTekDocuments.view
         #region Onglet Livres
         private readonly BindingSource bdgLivresListe = new BindingSource();
         private List<Livre> lesLivres = new List<Livre>();
+        private readonly Utilisateur utilisateur;
 
         /// <summary>
         /// Ouverture de l'onglet Livres : 
@@ -1121,6 +1142,11 @@ namespace MediaTekDocuments.view
         {
             lesRevues = controller.GetAllRevues();
             txbReceptionRevueNumero.Text = "";
+            if (!controller.VerifDroitModif(utilisateur))
+            {
+                grpReceptionExemplaire.Enabled = false;
+                grpReceptionExemplaire.Visible = false;
+            }
         }
 
         /// <summary>
@@ -1372,8 +1398,9 @@ namespace MediaTekDocuments.view
 
         private readonly BindingSource bdgCommandesDvdListe = new BindingSource();
         private List<Dvd> lesDvdCom = new List<Dvd>();
+        private object tabControl;
 
-        
+
 
 
         /// <summary>
@@ -1384,9 +1411,18 @@ namespace MediaTekDocuments.view
         /// <param name="e"></param>
         private void tabCommandeLivre_Enter(object sender, EventArgs e)
         {
-            lesLivresCom = controller.GetAllLivres();
-            RemplirComboSuivi(controller.GetAllSuivis(), bdgLivresComEtat, cbxLivresEtatCom);
-            RemplirLivresListeCompleteCom();
+            if (!controller.VerifCommande(utilisateur))
+            {
+                MessageBox.Show("Droits insuffisant");
+                Visible = false;
+            }
+            else
+            {
+                lesLivresCom = controller.GetAllLivres();
+                RemplirComboSuivi(controller.GetAllSuivis(), bdgLivresComEtat, cbxLivresEtatCom);
+                RemplirLivresListeCompleteCom();
+            }
+           
         }
         private void RemplirLivresListeCom(List<Livre> livres)
         {
@@ -1915,10 +1951,19 @@ namespace MediaTekDocuments.view
 
         private void tabCommandeDvd_Enter(object sender, EventArgs e)
         {
+            if (!controller.VerifCommande(utilisateur))
+            {
+                MessageBox.Show("Droits insuffisant");
+                Visible = false;
+            }
+            else
+            {
+                lesDvdCom = controller.GetAllDvd();
+                RemplirComboSuivi(controller.GetAllSuivis(), bdgDvdComEtat, cbxDvdEtatCom);
+                RemplirDvdListeComplete();
+            }
 
-            lesDvdCom = controller.GetAllDvd();
-            RemplirComboSuivi(controller.GetAllSuivis(), bdgDvdComEtat, cbxDvdEtatCom);
-            RemplirDvdListeComplete();
+            
         }
 
 
@@ -2039,9 +2084,18 @@ namespace MediaTekDocuments.view
 
         private void tabAbonnement_Enter(object sender, EventArgs e)
         {
-            lesRevues = controller.GetAllRevues();
-            RemplirRevuesListeComplete2();
-            AfficherAlerteAbo();
+            if (!controller.VerifCommande(utilisateur))
+            {
+                MessageBox.Show("Droits insuffisant");
+                Visible = false;
+            }
+            else
+            {
+                lesRevues = controller.GetAllRevues();
+                RemplirRevuesListeComplete2();
+                AfficherAlerteAbo();
+            }
+            
 
         }
 
@@ -2299,6 +2353,11 @@ namespace MediaTekDocuments.view
                 filtre = true;
             }
             RemplirAboListeComplete();
+        }
+
+        private void FrmMediatek_Load(object sender, EventArgs e)
+        {
+
         }
     }
     
