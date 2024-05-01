@@ -142,25 +142,43 @@ namespace MediaTekDocuments.controller
             
         }
 
+        /// <summary>
+        /// Supprime un abonnement
+        /// </summary>
+        /// <param name="abonnement"></param>
+        /// <returns></returns>
+
         public bool SupprimerAbonnement(Abonnement abonnement)
         {
             return access.SupprimerEntite("abonnement", JsonConvert.SerializeObject(abonnement, new CustomDateTimeConverter()));
         }
-
+        /// <summary>
+        /// Vérifie les droits pour accéder aux modifications
+        /// </summary>
+        /// <param name="utilisateur"></param>
+        /// <returns></returns>
         public bool VerifDroitModif(Utilisateur utilisateur)
         {
             if (servicesModif.Contains(utilisateur.Service.Libelle))
                 return true;
             return false;
         }
-
+        /// <summary>
+        /// Vérifie les droits pour accéder à l'accueil
+        /// </summary>
+        /// <param name="utilisateur"></param>
+        /// <returns></returns>
         public bool VerifDroitAccueil(Utilisateur utilisateur)
         {
             if (services.Contains(utilisateur.Service.Libelle))
                 return true;
             return false;
         }
-
+        /// <summary>
+        /// Vérifie une commande
+        /// </summary>
+        /// <param name="utilisateur"></param>
+        /// <returns></returns>
         public bool VerifCommande(Utilisateur utilisateur)
         {
             if (servicesCommande.Contains(utilisateur.Service.Libelle))

@@ -28,6 +28,9 @@ namespace MediaTekDocuments.dal
 
         private static readonly string uriApiName = "MediaTekDocuments.Properties.Settings.mediatekConnectionString";
 
+        /// <summary>
+        /// Chaine de connection
+        /// </summary>
         private static readonly string authenticationName = "MediaTekDocuments.Properties.Settings.mediatekAuthenticationString";
 
         /// <summary>
