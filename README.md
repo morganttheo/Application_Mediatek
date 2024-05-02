@@ -5,6 +5,8 @@ L'application exploite une API REST pour accéder à la BDD MySQL. Des explicati
 Voici l'application d'origine: https://github.com/CNED-SLAM/MediaTekDocuments avec son README présentant en détail l'application.
 Le projet est un fork de MediaTekDocuments, auquel des fonctionnalités telles que la gestion des commandes de livres, de DVD et d'abonnements ont été ajoutés .
 <br>
+## Accès au dépôt de l'API
+Ici le lien d'accès au dépôt de l'API: https://github.com/morganttheo/API_Mediatek
 ## Mode opératoire d'installation et d'utilisation en local
 Dans le dépot actuel, télechargez:
 https://github.com/morganttheo/Application_Mediatek/blob/master/MediatekDocumentsInstaller/MediatekDocumentsInstaller.msi
@@ -13,7 +15,7 @@ https://github.com/morganttheo/Application_Mediatek/blob/master/MediatekDocument
 
 Une fois téléchargés, cliquez sur «install-mediatekDocuments», des autorisations vont être demandés, cliquez sur oui.
 
-Une fois l’installation terminé, il suffit de cliquer sur l’icone créée dans le bureau et l’application se lance.
+Une fois l’installation terminée, il suffit de cliquer sur l’icone créée dans le bureau et l’application se lance.
 
 ![image](https://github.com/morganttheo/Application_Mediatek/assets/118992008/c61dfd4a-fe25-45c7-aae1-cf0c78860a01)
 
