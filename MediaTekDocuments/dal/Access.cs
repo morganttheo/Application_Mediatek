@@ -24,7 +24,9 @@ namespace MediaTekDocuments.dal
         /// adresse de l'API
         /// </summary>
         /// 
-        private static readonly string uriApi = "http://localhost/rest_mediatekdocuments/";
+        //private static readonly string uriApi = "http://localhost/rest_mediatekdocuments/";
+
+        private static readonly string uriApi = "https://mediatek-documents.website/rest_mediatekdocuments/";
 
         private static readonly string uriApiName = "MediaTekDocuments.Properties.Settings.mediatekConnectionString";
 
